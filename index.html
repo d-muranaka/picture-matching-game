@@ -11,6 +11,11 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+
         body {
             font-family: 'Arial', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -18,44 +23,49 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 20px;
+            padding: clamp(10px, 5vw, 40px);
         }
 
         .container {
             background: white;
             border-radius: 15px;
-            padding: 30px;
+            padding: clamp(15px, 6vw, 40px);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
+            max-width: 800px;
             width: 100%;
+            max-height: 95vh;
+            overflow-y: auto;
         }
 
         h1 {
             text-align: center;
             color: #333;
-            margin-bottom: 20px;
-            font-size: 28px;
+            margin-bottom: clamp(15px, 4vw, 30px);
+            font-size: clamp(20px, 6vw, 40px);
+            word-break: break-word;
         }
 
         .info-section {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 25px;
+            margin-bottom: clamp(15px, 4vw, 30px);
             background: #f8f9fa;
-            padding: 15px;
+            padding: clamp(10px, 3vw, 20px);
             border-radius: 10px;
-            gap: 20px;
+            gap: clamp(10px, 3vw, 30px);
+            flex-wrap: wrap;
         }
 
         .info-item {
             flex: 1;
+            min-width: 100px;
             text-align: center;
         }
 
         .info-label {
             color: #666;
-            font-size: 12px;
+            font-size: clamp(10px, 2vw, 14px);
             text-transform: uppercase;
             letter-spacing: 1px;
             margin-bottom: 5px;
@@ -63,7 +73,7 @@
 
         .info-value {
             color: #333;
-            font-size: 24px;
+            font-size: clamp(16px, 4vw, 32px);
             font-weight: bold;
         }
 
@@ -78,29 +88,38 @@
         .game-board {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-bottom: 25px;
+            gap: clamp(6px, 2vw, 15px);
+            margin-bottom: clamp(20px, 5vw, 40px);
             perspective: 1000px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
 
         .card {
-            aspect-ratio: 1;
+            aspect-ratio: 1 / 1;
             background: #667eea;
             border: none;
             border-radius: 10px;
             cursor: pointer;
-            font-size: 40px;
+            font-size: clamp(24px, 8vw, 50px);
             display: flex;
             justify-content: center;
             align-items: center;
             transition: all 0.3s ease;
             user-select: none;
+            -webkit-user-select: none;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            padding: 5px;
         }
 
         .card:hover:not(.flipped):not(.matched) {
             transform: translateY(-5px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .card:active:not(.flipped):not(.matched) {
+            transform: translateY(-2px);
         }
 
         .card.flipped {
@@ -120,18 +139,20 @@
 
         .button-group {
             display: flex;
-            gap: 10px;
+            gap: clamp(8px, 3vw, 20px);
             justify-content: center;
+            flex-wrap: wrap;
         }
 
         button {
-            padding: 12px 30px;
-            font-size: 16px;
+            padding: clamp(10px, 2.5vw, 16px) clamp(20px, 5vw, 40px);
+            font-size: clamp(14px, 3vw, 18px);
             border: none;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
             transition: all 0.3s ease;
+            white-space: nowrap;
         }
 
         .reset-btn {
@@ -145,6 +166,10 @@
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
+        .reset-btn:active {
+            transform: translateY(0);
+        }
+
         .game-over-modal {
             display: none;
             position: fixed;
@@ -156,6 +181,7 @@
             justify-content: center;
             align-items: center;
             z-index: 1000;
+            padding: 20px;
         }
 
         .game-over-modal.show {
@@ -164,15 +190,20 @@
 
         .modal-content {
             background: white;
-            padding: 40px;
+            padding: clamp(25px, 6vw, 50px);
             border-radius: 15px;
             text-align: center;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 90vw;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
         }
 
         .modal-content h2 {
-            font-size: 32px;
-            margin-bottom: 15px;
+            font-size: clamp(24px, 5vw, 40px);
+            margin-bottom: clamp(10px, 3vw, 20px);
+            word-break: break-word;
         }
 
         .modal-content.win h2 {
@@ -185,13 +216,14 @@
 
         .modal-content p {
             color: #666;
-            margin-bottom: 25px;
-            font-size: 16px;
+            margin-bottom: clamp(15px, 4vw, 30px);
+            font-size: clamp(14px, 2.5vw, 18px);
+            word-break: break-word;
         }
 
         .modal-content button {
-            padding: 12px 40px;
-            font-size: 16px;
+            padding: clamp(10px, 2.5vw, 16px) clamp(20px, 5vw, 40px);
+            font-size: clamp(14px, 3vw, 18px);
             background: #667eea;
             color: white;
         }
@@ -200,30 +232,327 @@
             background: #5568d3;
         }
 
+        /* ===== レスポンシブブレークポイント ===== */
+
+        /* 超小型デバイス (〜320px) */
+        @media (max-width: 320px) {
+            .game-board {
+                gap: 5px;
+            }
+            .card {
+                font-size: 20px;
+            }
+        }
+
+        /* 小型デバイス (321px 〜 480px) */
         @media (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+
+            .container {
+                padding: 12px;
+                border-radius: 12px;
+            }
+
+            h1 {
+                margin-bottom: 12px;
+                font-size: 22px;
+            }
+
+            .info-section {
+                flex-direction: column;
+                gap: 8px;
+                margin-bottom: 15px;
+                padding: 10px;
+            }
+
+            .info-item {
+                width: 100%;
+                min-width: unset;
+            }
+
+            .info-label {
+                font-size: 11px;
+            }
+
+            .info-value {
+                font-size: 18px;
+            }
+
+            .game-board {
+                gap: 6px;
+                margin-bottom: 15px;
+            }
+
+            .card {
+                font-size: 24px;
+                border-radius: 8px;
+            }
+
+            button {
+                padding: 10px 20px;
+                font-size: 14px;
+            }
+
+            .modal-content {
+                padding: 25px;
+            }
+
+            .modal-content h2 {
+                font-size: 24px;
+                margin-bottom: 12px;
+            }
+
+            .modal-content p {
+                font-size: 14px;
+                margin-bottom: 15px;
+            }
+        }
+
+        /* 中型デバイス (481px 〜 768px) */
+        @media (min-width: 481px) and (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
             .container {
                 padding: 20px;
             }
 
             h1 {
-                font-size: 24px;
+                font-size: 28px;
+                margin-bottom: 18px;
             }
 
             .info-section {
-                flex-direction: column;
-                gap: 10px;
+                padding: 12px;
+                margin-bottom: 20px;
             }
 
-            .info-item {
-                flex: none;
+            .info-label {
+                font-size: 12px;
+            }
+
+            .info-value {
+                font-size: 22px;
             }
 
             .game-board {
                 gap: 8px;
+                margin-bottom: 20px;
             }
 
             .card {
                 font-size: 32px;
+            }
+
+            button {
+                padding: 12px 28px;
+                font-size: 16px;
+            }
+
+            .modal-content {
+                padding: 35px;
+            }
+
+            .modal-content h2 {
+                font-size: 32px;
+                margin-bottom: 15px;
+            }
+
+            .modal-content p {
+                font-size: 16px;
+            }
+        }
+
+        /* 大型デバイス (769px 〜 1024px) */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .container {
+                padding: 30px;
+            }
+
+            h1 {
+                font-size: 36px;
+                margin-bottom: 24px;
+            }
+
+            .info-value {
+                font-size: 28px;
+            }
+
+            .card {
+                font-size: 44px;
+            }
+
+            button {
+                padding: 14px 32px;
+                font-size: 17px;
+            }
+
+            .modal-content {
+                padding: 45px;
+            }
+
+            .modal-content h2 {
+                font-size: 38px;
+            }
+
+            .modal-content p {
+                font-size: 18px;
+            }
+        }
+
+        /* 超大型デバイス (1025px 〜) */
+        @media (min-width: 1025px) {
+            .container {
+                padding: 40px;
+            }
+
+            h1 {
+                font-size: 42px;
+                margin-bottom: 30px;
+            }
+
+            .info-section {
+                padding: 20px;
+                margin-bottom: 30px;
+            }
+
+            .info-value {
+                font-size: 32px;
+            }
+
+            .game-board {
+                gap: 15px;
+                margin-bottom: 40px;
+            }
+
+            .card {
+                font-size: 52px;
+            }
+
+            button {
+                padding: 16px 40px;
+                font-size: 18px;
+            }
+
+            .modal-content {
+                padding: 50px;
+            }
+
+            .modal-content h2 {
+                font-size: 44px;
+            }
+
+            .modal-content p {
+                font-size: 20px;
+            }
+        }
+
+        /* タッチデバイス対応（hover無効化） */
+        @media (hover: none) and (pointer: coarse) {
+            .card:active:not(.flipped):not(.matched) {
+                transform: scale(0.95);
+            }
+
+            button:active {
+                opacity: 0.8;
+            }
+        }
+
+        /* 横向きモード (タブレット/スマートフォン横向き) */
+        @media (max-height: 500px) and (orientation: landscape) {
+            body {
+                padding: 5px;
+            }
+
+            .container {
+                padding: 10px;
+                max-height: 98vh;
+            }
+
+            h1 {
+                margin-bottom: 8px;
+                font-size: 18px;
+            }
+
+            .info-section {
+                margin-bottom: 10px;
+                padding: 8px;
+                gap: 8px;
+            }
+
+            .info-label {
+                font-size: 9px;
+            }
+
+            .info-value {
+                font-size: 16px;
+            }
+
+            .game-board {
+                margin-bottom: 12px;
+                gap: 5px;
+            }
+
+            .card {
+                font-size: 22px;
+            }
+
+            button {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+
+            .modal-content {
+                padding: 20px;
+            }
+
+            .modal-content h2 {
+                font-size: 22px;
+                margin-bottom: 10px;
+            }
+
+            .modal-content p {
+                font-size: 13px;
+                margin-bottom: 12px;
+            }
+
+            .modal-content button {
+                padding: 8px 16px;
+                font-size: 13px;
+            }
+        }
+
+        /* フォーカス スタイル（アクセシビリティ） */
+        button:focus-visible {
+            outline: 3px solid #667eea;
+            outline-offset: 2px;
+        }
+
+        .card:focus-visible {
+            outline: 3px solid #f39c12;
+            outline-offset: 2px;
+        }
+
+        /* 高コントラスト モード対応 */
+        @media (prefers-contrast: more) {
+            .card {
+                border: 2px solid rgba(0, 0, 0, 0.3);
+            }
+
+            .info-section {
+                border: 1px solid #999;
+            }
+        }
+
+        /* 減速アニメーション対応 */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
             }
         }
     </style>
