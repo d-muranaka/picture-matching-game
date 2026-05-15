@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>絵合わせゲーム</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 28px;
+        }
+
+        .info-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            gap: 20px;
+        }
+
+        .info-item {
+            flex: 1;
+            text-align: center;
+        }
+
+        .info-label {
+            color: #666;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .info-value.mistakes {
+            color: #e74c3c;
+        }
+
+        .info-value.matched {
+            color: #27ae60;
+        }
+
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 25px;
+            perspective: 1000px;
+        }
+
+        .card {
+            aspect-ratio: 1;
+            background: #667eea;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.3s ease;
+            user-select: none;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .card:hover:not(.flipped):not(.matched) {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .card.flipped {
+            background: #f39c12;
+        }
+
+        .card.matched {
+            background: #27ae60;
+            cursor: default;
+            animation: matchPulse 0.5s ease;
+        }
+
+        @keyframes matchPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        button {
+            padding: 12px 30px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .reset-btn {
+            background: #667eea;
+            color: white;
+        }
+
+        .reset-btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-over-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .game-over-modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            padding: 40px;
+            border-radius: 15px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-content h2 {
+            font-size: 32px;
+            margin-bottom: 15px;
+        }
+
+        .modal-content.win h2 {
+            color: #27ae60;
+        }
+
+        .modal-content.lose h2 {
+            color: #e74c3c;
+        }
+
+        .modal-content p {
+            color: #666;
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+
+        .modal-content button {
+            padding: 12px 40px;
+            font-size: 16px;
+            background: #667eea;
+            color: white;
+        }
+
+        .modal-content button:hover {
+            background: #5568d3;
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .info-section {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .info-item {
+                flex: none;
+            }
+
+            .game-board {
+                gap: 8px;
+            }
+
+            .card {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 絵合わせゲーム</h1>
+        
+        <div class="info-section">
+            <div class="info-item">
+                <div class="info-label">マッチ数</div>
+                <div class="info-value matched" id="matchedCount">0 / 8</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">ミス</div>
+                <div class="info-value mistakes" id="mistakeCount">0 / 3</div>
+            </div>
+        </div>
+
+        <div class="game-board" id="gameBoard"></div>
+
+        <div class="button-group">
+            <button class="reset-btn" onclick="resetGame()">🔄 リセット</button>
+        </div>
+    </div>
+
+    <div class="game-over-modal" id="gameOverModal">
+        <div class="modal-content" id="modalContent">
+            <h2></h2>
+            <p></p>
+            <button onclick="resetGame()">もう一度プレイ</button>
+        </div>
+    </div>
+
+    <script>
+        const EMOJI_PATTERNS = ['🌟', '🎨', '🎭', '🎪', '🎸', '🎬', '🎲', '🎯'];
+        const CARD_COUNT = 16;
+        const PAIR_COUNT = 8;
+        const MAX_MISTAKES = 3;
+
+        let cards = [];
+        let flippedCards = [];
+        let matchedPairs = 0;
+        let mistakes = 0;
+        let isProcessing = false;
+        let gameOver = false;
+
+        /**
+         * ゲームを初期化する
+         */
+        function initGame() {
+            cards = [];
+            flippedCards = [];
+            matchedPairs = 0;
+            mistakes = 0;
+            isProcessing = false;
+            gameOver = false;
+            
+            // カードを作成（各絵柄を2枚）
+            EMOJI_PATTERNS.forEach(emoji => {
+                cards.push({ emoji, matched: false });
+                cards.push({ emoji, matched: false });
+            });
+
+            // カードをシャッフル
+            shuffleCards();
+
+            // UIを更新
+            renderBoard();
+            updateUI();
+
+            // モーダルを非表示
+            document.getElementById('gameOverModal').classList.remove('show');
+        }
+
+        /**
+         * Fisher-Yatesアルゴリズムでカードをシャッフル
+         */
+        function shuffleCards() {
+            for (let i = cards.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [cards[i], cards[j]] = [cards[j], cards[i]];
+            }
+        }
+
+        /**
+         * ゲームボードをレンダリング
+         */
+        function renderBoard() {
+            const gameBoard = document.getElementById('gameBoard');
+            gameBoard.innerHTML = '';
+
+            cards.forEach((card, index) => {
+                const cardElement = document.createElement('button');
+                cardElement.className = 'card';
+                
+                if (card.matched) {
+                    cardElement.classList.add('matched');
+                    cardElement.textContent = card.emoji;
+                } else if (flippedCards.find(f => f.index === index)) {
+                    cardElement.classList.add('flipped');
+                    cardElement.textContent = card.emoji;
+                } else {
+                    cardElement.textContent = '?';
+                }
+
+                cardElement.onclick = () => flipCard(index, cardElement);
+                gameBoard.appendChild(cardElement);
+            });
+        }
+
+        /**
+         * カードをめくる
+         */
+        function flipCard(index, cardElement) {
+            // ゲームが終了している、処理中、既にめくられている、またはマッチ済みの場合は無視
+            if (gameOver || isProcessing || flippedCards.find(f => f.index === index) || cards[index].matched) {
+                return;
+            }
+
+            // めくられたカードを記録
+            flippedCards.push({ index, emoji: cards[index].emoji });
+            renderBoard();
+
+            // 2枚めくられたかをチェック
+            if (flippedCards.length === 2) {
+                isProcessing = true;
+                checkMatch();
+            }
+        }
+
+        /**
+         * マッチを確認
+         */
+        function checkMatch() {
+            setTimeout(() => {
+                const [first, second] = flippedCards;
+
+                if (first.emoji === second.emoji) {
+                    // マッチした
+                    cards[first.index].matched = true;
+                    cards[second.index].matched = true;
+                    matchedPairs++;
+
+                    flippedCards = [];
+                    isProcessing = false;
+                    updateUI();
+
+                    // ゲームクリアをチェック
+                    if (matchedPairs === PAIR_COUNT) {
+                        endGame(true);
+                    }
+
+                    renderBoard();
+                } else {
+                    // マッチしなかった
+                    mistakes++;
+                    updateUI();
+
+                    // ゲームオーバーをチェック
+                    if (mistakes >= MAX_MISTAKES) {
+                        endGame(false);
+                    }
+
+                    // カードを元に戻す
+                    setTimeout(() => {
+                        flippedCards = [];
+                        isProcessing = false;
+                        renderBoard();
+                    }, 1000);
+                }
+            }, 800);
+        }
+
+        /**
+         * UIを更新
+         */
+        function updateUI() {
+            document.getElementById('matchedCount').textContent = `${matchedPairs} / ${PAIR_COUNT}`;
+            document.getElementById('mistakeCount').textContent = `${mistakes} / ${MAX_MISTAKES}`;
+        }
+
+        /**
+         * ゲーム終了
+         */
+        function endGame(isWin) {
+            gameOver = true;
+            const modal = document.getElementById('gameOverModal');
+            const modalContent = document.getElementById('modalContent');
+
+            if (isWin) {
+                modalContent.classList.add('win');
+                modalContent.classList.remove('lose');
+                modalContent.querySelector('h2').textContent = '🎉 ゲーム成功！';
+                modalContent.querySelector('p').textContent = `全てのペアを見つけました！ミス: ${mistakes}/3`;
+            } else {
+                modalContent.classList.add('lose');
+                modalContent.classList.remove('win');
+                modalContent.querySelector('h2').textContent = '😢 ゲームオーバー';
+                modalContent.querySelector('p').textContent = `ミスが3回になりました。マッチ数: ${matchedPairs}/8`;
+            }
+
+            modal.classList.add('show');
+        }
+
+        /**
+         * ゲームをリセット
+         */
+        function resetGame() {
+            initGame();
+        }
+
+        // ゲーム開始
+        initGame();
+    </script>
+</body>
+</html>
